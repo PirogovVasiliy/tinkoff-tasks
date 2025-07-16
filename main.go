@@ -1,17 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-	var a, b, c, d int
-	fmt.Scan(&a, &b, &c, &d)
-	fmt.Println(checkExpenses(a, b, c, d))
+	var n int
+	fmt.Scan(&n)
+	fmt.Println(solve(n))
 }
 
-func checkExpenses(a int, b int, c int, d int) int {
-	if d > b {
-		return a + (d-b)*c
-	} else {
-		return a
+func solve(n int) int {
+	step := 1
+	count := 0
+	for step < n {
+		step *= 2
+		count++
 	}
+	return count
 }
