@@ -5,68 +5,52 @@ import (
 )
 
 func main() {
-	var l, r uint64
-	fmt.Scan(&l, &r)
+	var n int
+	fmt.Scan(&n)
+	students := make([]int, n)
+	for i := 0; i < n; i++ {
 
-	fmt.Println(solve(l, r))
-}
+		fmt.Scan(&students[i])
 
-func solve(l uint64, r uint64) int {
-	count := 0
-
-	digitNumber := getDigitNumber(l)
-	firstDigit := int(l / pow(10, digitNumber-1))
-	for i := firstDigit; i <= 9; i++ {
-		test := formTest(i, digitNumber)
-
-		if test < l {
-			continue
-		} else if test < r {
-			count++
-		} else if test == r {
-			return count + 1
-		} else {
-			return count
-		}
 	}
 
-	for {
-		digitNumber++
-		for i := 1; i <= 9; i++ {
-			test := formTest(i, digitNumber)
+	fmt.Println(solve(n, students))
+}
 
-			if test < r {
-				count++
-			} else if test == r {
-				return count + 1
-			} else {
-				return count
+func solve(n int, students []int) (int, int) {
+	even := 0
+	odd := 0
+
+	for i := 0; i < n; i += 2 {
+		if students[i]%2 != 1 {
+			if odd != 0 {
+				return -1, -1
 			}
+			odd = i + 1
 		}
 	}
-}
-
-func getDigitNumber(num uint64) int {
-	count := 0
-	for num != 0 {
-		num /= 10
-		count++
+	for i := 1; i < n; i += 2 {
+		if students[i]%2 != 0 {
+			if even != 0 {
+				return -1, -1
+			}
+			even = i + 1
+		}
 	}
-	return count
-}
-
-func formTest(digit int, digitNumbers int) uint64 {
-	res := uint64(digit)
-	for i := 0; i < digitNumbers-1; i++ {
-		res = res*10 + uint64(digit)
+	if even == 0 && odd == 0 {
+		if n >= 3 {
+			return 1, 3
+		} else {
+			return -1, -1
+		}
 	}
-	return res
-}
-
-func pow(num uint64, b int) uint64 {
-	res := uint64(1)
-	for i := 0; i < b; i++ {
-		res *= num
+	if even == 0 || odd == 0 {
+		return -1, -1
 	}
-	return res
+
+	if odd > even {
+		return even, odd
+	}
+
+	return odd, even
 }
