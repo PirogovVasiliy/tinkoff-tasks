@@ -5,45 +5,48 @@ import (
 )
 
 func main() {
-	var n, k int
-	fmt.Scan(&n, &k)
-	nums := make([]int, n)
-	for i := 0; i < n; i++ {
-		fmt.Scan(&nums[i])
-	}
+	var l, r uint64
+	fmt.Scan(&l, &r)
 
-	fmt.Println(solve(k, nums))
+	fmt.Println(solve(l, r))
 }
 
-func solve(k int, nums []int) int {
-	difference := 0
-	for i := 0; i < k; i++ {
-		minNum := 0
-		maxDig := 0
-		elemToFix := 0
-		for j, el := range nums {
-			fixNum, fixDig := getFixDigit(el, getDigitNumber(el))
-			if fixDig > maxDig {
-				maxDig = fixDig
-				minNum = fixNum
-				elemToFix = j
-			} else if fixDig == maxDig {
-				if fixNum < minNum {
-					minNum = fixNum
-					elemToFix = j
-				}
+func solve(l uint64, r uint64) int {
+	count := 0
+
+	digitNumber := getDigitNumber(l)
+	firstDigit := int(l / pow(10, digitNumber-1))
+	for i := firstDigit; i <= 9; i++ {
+		test := formTest(i, digitNumber)
+
+		if test < l {
+			continue
+		} else if test < r {
+			count++
+		} else if test == r {
+			return count + 1
+		} else {
+			return count
+		}
+	}
+
+	for {
+		digitNumber++
+		for i := 1; i <= 9; i++ {
+			test := formTest(i, digitNumber)
+
+			if test < r {
+				count++
+			} else if test == r {
+				return count + 1
+			} else {
+				return count
 			}
 		}
-		if maxDig != 0 {
-			var dif int
-			dif, nums[elemToFix] = fixElem(nums[elemToFix], minNum, maxDig)
-			difference += dif
-		}
 	}
-	return difference
 }
 
-func getDigitNumber(num int) int {
+func getDigitNumber(num uint64) int {
 	count := 0
 	for num != 0 {
 		num /= 10
@@ -52,28 +55,18 @@ func getDigitNumber(num int) int {
 	return count
 }
 
-func getFixDigit(number int, digit int) (fixNumber int, fixDigit int) {
-	for digit-1 >= 0 {
-		a := number / pow(10, digit-1) % 10
-		if a != 9 {
-			return a, digit
-		} else {
-			digit--
-		}
-	}
-	return 0, 0
-}
-
-func pow(num int, b int) int {
-	res := 1
-	for i := 0; i < b; i++ {
-		res *= num
+func formTest(digit int, digitNumbers int) uint64 {
+	res := uint64(digit)
+	for i := 0; i < digitNumbers-1; i++ {
+		res = res*10 + uint64(digit)
 	}
 	return res
 }
 
-func fixElem(num int, fixNumber int, fixDigit int) (int, int) {
-	res := num/pow(10, fixDigit)*pow(10, fixDigit) + 9*pow(10, fixDigit-1) + num%pow(10, fixDigit-1)
-	difference := (9 - fixNumber) * pow(10, fixDigit-1)
-	return difference, res
+func pow(num uint64, b int) uint64 {
+	res := uint64(1)
+	for i := 0; i < b; i++ {
+		res *= num
+	}
+	return res
 }
